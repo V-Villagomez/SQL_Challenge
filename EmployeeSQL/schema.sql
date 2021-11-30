@@ -66,7 +66,7 @@ CREATE TABLE salaries (
 	FOREIGN KEY (emp_no) REFERENCES employees(emp_no)
 );
 
--- CSV files imported into each table using pgAdmin.
+-- CSV files imported into each table using pgAdmin
 
 --SELECT * FROM titles;
 --SELECT * FROM employees;
