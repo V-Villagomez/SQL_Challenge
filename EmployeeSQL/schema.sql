@@ -21,7 +21,7 @@ CREATE TABLE employees (
 	 hire_date DATE,
 	 FOREIGN KEY (emp_title_id) REFERENCES titles(title_id),
 	 CONSTRAINT pk_employees PRIMARY KEY (emp_no)
-	 --md5(concat(emp_no, emp_title_id, birth_date, first_name, last_name, sex, hire_date))
+	 -- md5(emp_no)
 );
 
 -- Drop table if exists
@@ -50,10 +50,10 @@ DROP TABLE IF EXISTS dept_emp;
 -- Create an dept_emp table, with the following: 
 -- set the foreign key and primary key relationships accordingly
 CREATE TABLE dept_emp (
-	dept_no VARCHAR,
 	emp_no INT,
-	FOREIGN KEY (dept_no) REFERENCES departments(dept_no),
-	FOREIGN KEY (emp_no) REFERENCES employees(emp_no)
+	dept_no VARCHAR,
+	FOREIGN KEY (emp_no) REFERENCES employees(emp_no),
+	FOREIGN KEY (dept_no) REFERENCES departments(dept_no)
 );
 
 -- Drop table if exists
@@ -61,8 +61,14 @@ DROP TABLE IF EXISTS salaries;
 -- Create an salaries table, with the following: 
 -- set the foreign key and primary key relationships accordingly
 CREATE TABLE salaries (
-	salary INT,
 	emp_no INT, 
+	salary INT,
 	FOREIGN KEY (emp_no) REFERENCES employees(emp_no)
 );
 
+--SELECT * FROM titles;
+--SELECT * FROM employees;
+--SELECT * FROM departments;
+--SELECT * FROM dept_managers;
+--SELECT * FROM dept_emp;
+--SELECT * FROM salaries;
