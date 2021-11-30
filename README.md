@@ -2,9 +2,9 @@
 
 ## Background
 
-It is a beautiful spring day, and it is two weeks since you have been hired as a new data engineer at Pewlett Hackard. Your first major task is a research project on employees of the corporation from the 1980s and 1990s. All that remain of the database of employees from that period are six CSV files.
+It is a beautiful spring day, and it is two weeks since I have been hired as a new data engineer at Pewlett Hackard. My first major task is a research project on employees of the corporation from the 1980s and 1990s. All that remain of the database of employees from that period are six CSV files.
 
-In this assignment, you will design the tables to hold data in the CSVs, import the CSVs into a SQL database, and answer questions about the data. In other words, you will perform:
+In this assignment, I will design the tables to hold data in the CSVs, import the CSVs into a SQL database, and answer questions about the data. In other words, I will perform:
 
 1. Data Engineering
 
@@ -14,93 +14,162 @@ In this assignment, you will design the tables to hold data in the CSVs, import 
 
 A modern word to capture all of the above activities is `analytics engineering`.
 
-### Before You Begin
+### Submission
 
-1. Create a new repository for this project called `sql-challenge`. **Do not add this homework to an existing repository**.
+As per instructions, the following files were created and are enclosed in the **EmployeesSQL** folder. 
 
-2. Clone the new repository to your computer.
+1. The **data** encloses the six CSV files. 
 
-3. Inside your local git repository, create a directory for the SQL challenge. Use a folder name to correspond to the challenge: **EmployeeSQL**.
+2. The **Images** folder encloses all images: Entity Relationship Diagram (ERD) export and visualizations. 
 
-4. Add your files to this folder.
+3. The **schema.sql** file encloses the table schema for the six CSV files. 
 
-5. Push the above changes to GitHub.
+4. The **queries.sql** file encloses eight queries providing a Data Anaylsis. 
 
-## Instructions
+5. The **sql_challenges_bonus.ipynb** file encloses further anaylsis of the SQL database. 
 
-#### Data Modeling
+6. The **sql_challenge_ERD_export.sql** file shows documentation of the created ERD export. 
 
-Inspect the CSVs and sketch out an ERD of the tables. Feel free to use a tool like [http://www.quickdatabasediagrams.com](http://www.quickdatabasediagrams.com).
+7. Finally, the **epilogue.sql** shows the searched ID number of 499942. 
 
-#### Data Engineering
 
-- Use the information you have to create a table schema for each of the six CSV files. Remember to specify data types, primary keys, foreign keys, and other constraints.
-- The schema should be saved in a file called `schema.sql`, which can be run once to create and populate all base tables in the database.
+### Data Modeling
 
-  - For the primary keys check to see if the column is unique, otherwise create a [composite key](https://en.wikipedia.org/wiki/Compound_key). Which takes two+ primary keys in order to uniquely identify a row. _Optional_: A helpful function you might look at is `md5()`, which will generate a unique hash for each combination of composite keys. [Check this out for more info](https://blog.getdbt.com/the-most-underutilized-function-in-sql/).
-  - Be sure to create tables in the correct order to handle foreign keys.
+The Entity Relationship Diagram (ERD) includes the database of employees, the six CSV files. To see diagram documentation, see the sql_challenge_ERD_export.sql file. 
 
-- Import each CSV file into the corresponding SQL table. **Note** be sure to import the data in the same order that the tables were created and account for the headers when importing to avoid errors.
+![ERD](EmployeeSQL/Images/sql_challenge_ERD_export.png)
 
-#### Data Analysis
+### Data Engineering
 
-Once you have a complete database, write a query to select the following information from the database.
+- Table schemas were created for each of the six CSV files, where data types, primary keys, foreign keys, and other constraints were specified. See the **schema.sql** file. Each CSV file was imported into each table using pgAdmin.  
 
-Save the queries in a file called `queries.sql`:
+### Data Analysis
+
+Following completion of the database, the following eight queries were created to provide data anaylsis. See the **queries.sql** file. 
 
 1. Select the employee number, last name, first name, sex, and salary of all employees, ordered by employee number
 
+    ```
+    SELECT 
+	      e.emp_no AS "Employee Number",
+	      e.last_name AS "Last Name",
+	      e.first_name AS "First Name",
+	      e.sex As "Gender",
+	      s.salary AS "Salary"
+    FROM employees e
+    INNER JOIN salaries s ON e.emp_no = s.emp_no
+    ORDER BY e.emp_no;
+    ```
+
 2. Select the first name, last name, and hiring date for all employees hired in 1986
+
+    ```
+    SELECT
+	      e.first_name AS "First Name",
+	      e.last_name AS "Last Name",
+	      e.hire_date AS "Hire Date"
+    FROM employees e
+    WHERE EXTRACT(year FROM e.hire_date) = 1986;
+    ```
 
 3. Select the department number, department name, employee number, last name, and first name of all managers of each department
 
+      ```
+      SELECT 
+	        dm.dept_no AS "Department Number",
+	        d.dept_name AS "Department Name",
+	        dm.emp_no AS "Employee Number",
+	        e.last_name AS "Last Name",
+	        e.first_name AS "First Name"
+      FROM dept_managers dm
+      INNER JOIN departments d ON dm.dept_no = d.dept_no
+      INNER JOIN employees e ON dm.emp_no = e.emp_no;
+
 4. Select the employee number, last name, first name, and department of each employee, ordered by employee number
+
+      ```
+      SELECT 
+	        e.emp_no AS "Employee Number",
+	        e.last_name AS "Last Name",
+	        e.first_name AS "First Name",
+	        d.dept_name AS "Department Name"
+      FROM employees e
+      LEFT JOIN dept_emp de ON e.emp_no = de.emp_no
+      LEFT JOIN departments d ON de.dept_no = d.dept_no
+      ORDER BY e.emp_no;
+      ```
 
 5. Select first name, last name, birth date, and sex of all employees whose first name is "Hercules" and last name begins with a "B"
 
+      ```
+      SELECT 
+        e.first_name AS "First Name",
+        e.last_name AS "Last Name",
+        e.birth_date AS "Date of Birth",
+        e.sex AS "Gender"
+      FROM employees e
+      WHERE e.first_name = 'Hercules'
+      AND e.last_name LIKE 'B%';
+      ```
+
 6. Select employee number, last name, first name, and department name of all employees in the Sales department, ordered by employee number
+
+      ```
+      SELECT 
+        e.emp_no AS "Employee Number",
+        e.last_name AS "Last Name",
+        e.first_name AS "First Name",
+        d.dept_name AS "Department Name"
+      FROM employees e
+      INNER JOIN dept_emp de ON e.emp_no = de.emp_no
+      INNER JOIN departments d ON de.dept_no = d.dept_no
+      WHERE d.dept_name = 'Sales'
+      ORDER BY e.emp_no;
+      ```
 
 7. Select employee number, last name, first name, and department name of all employees in the 'Sales' OR the 'Development' department, ordered by employee number
 
+      ```
+      SELECT
+        e.emp_no AS "Employee Number",
+        e.last_name AS "Last Name",
+        e.first_name AS "First Name",
+        d.dept_name AS "Department Name"
+      FROM employees e
+      INNER JOIN dept_emp de ON e.emp_no = de.emp_no
+      INNER JOIN departments d ON de.dept_no = d.dept_no
+      WHERE d.dept_name IN ('Sales', 'Development')
+      ORDER BY e.emp_no;
+      ```
+
 8. Count the number of employees, grouped by last name
+
+      ```
+      SELECT 
+        e.last_name AS "Last Name",
+        COUNT(e.last_name) AS "Number of Employees"
+      FROM employees e
+      GROUP BY e.last_name
+      ORDER BY COUNT(e.last_name) DESC;
+      ```
 
 ## Bonus (Optional)
 
-As you examine the data, you are overcome with a creeping suspicion that the dataset is fake. You surmise that your boss handed you spurious data in order to test the data engineering skills of a new employee. To confirm your hunch, you decide to take the following steps to generate a visualization of the data, with which you will confront your boss:
+As a bonus, I decided to take the following steps to generate a visualiation of the data. See the **sql_challenges_bonus.ipynb** file for more details. 
 
-1. Import the SQL database into Pandas. (Yes, you could read the CSVs directly in Pandas, but you are, after all, trying to prove your technical mettle.) This step may require some research. Install sqlalchemy library in your python environment and feel free to use the code below to get started. Be sure to make any necessary modifications for your username, password, host, port, and database name:
+1. Imported the SQL database into Pandas by installing the SQLAlchemy library in my python environment and made sure to hide any sensitive information. Other libraries used were: matplotlib, os, numpy, and scipy.stats. 
 
-   ```sql
-   from sqlalchemy import create_engine
-   engine = create_engine('postgresql://localhost:5432/<your_db_name>')
-   connection = engine.connect()
-   ```
+2. Created a histogram to visualize the most common salary ranges for employees. The histogram shows that the data is positively skewed, indicating a large variance and standard deviation. 
 
-- Consult [SQLAlchemy documentation](https://docs.sqlalchemy.org/en/latest/core/engines.html#postgresql) for more information.
+![histogram](EmployeeSQL/Images/histogram_salary.png)
 
-- If using a password, do not upload your password to your GitHub repository. See [https://www.youtube.com/watch?v=2uaTPmNvH0I](https://www.youtube.com/watch?v=2uaTPmNvH0I) and [https://help.github.com/en/github/using-git/ignoring-files](https://help.github.com/en/github/using-git/ignoring-files) for more information.
+3. Created a bar chart of average salary by title. The bar chart shows strange data points in that assistant engineers and engineers have similar average salaries. Also, managers make less than staff. These points seem odd in that we could expect that senior roles would have higher salaries than their subordinates, this chart shows otherwise. 
 
-2. Create a histogram to visualize the most common salary ranges for employees.
-
-3. Create a bar chart of average salary by title.
+![bar](EmployeeSQL/Images/barchart_avgsalary.png)
 
 ## Epilogue
 
-Evidence in hand, you march into your boss's office and present the visualization. With a sly grin, your boss thanks you for your work. On your way out of the office, you hear the words, "Search your ID number." You look down at your badge to see that your employee ID number is 499942.
-
-## Submission
-
-- Create an image file of your ERD.
-
-- Create a `schema.sql` file of your table schemata.
-
-- Create a `queries.sql` file of your queries.
-
-- (Optional) Create a Jupyter Notebook of the bonus analysis.
-
-- Create and upload a repository with the above files to GitHub and post a link on BootCamp Spot.
-
-- Ensure your repository has regular commits and a thorough README.md file
+As it turned out, the database was fake. But, it was a way to test the data engineering skills of a new employee. On the way out of the office, the boss said, "Search your ID number." Which is employee number 499942. See the **epilogue.sql** file which shows the searched ID number of 499942. 
 
 ## Rubric
 
